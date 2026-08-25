@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE suite SYSTEM
+        "https://testng.org/testng-1.0.dtd">
+
+<suite name="Automation Suite">
+
+    <test name="Smoke and Sanity Tests">
+
+        <classes>
+
+            <!-- Smoke Tests -->
+            <class name="tests.LoginTest"/>
+            <class name="tests.DashboardTest"/>
+
+            <!-- Sanity Tests -->
+            <class name="tests.EmployeePageTest"/>
+            <class name="tests.LogoutTest"/>
+
+        </classes>
+
+    </test>
+
+</suite>
