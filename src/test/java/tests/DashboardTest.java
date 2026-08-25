@@ -1,7 +1,11 @@
 package tests;
 
 import basepackage.BaseTest;
-import org.openqa.selenium.By;
+import listeners.RetryAnalyzer;
+import pages.DashboardPage;
+import pages.LoginPage;
+import utils.ConfigReader;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -11,29 +15,55 @@ public class DashboardTest extends BaseTest {
             priority = 2,
             description = "Verify Dashboard page",
             groups = {"smoke", "dashboard"},
-            dependsOnGroups = {"login"}
+            dependsOnGroups = {"login"},
+            retryAnalyzer = RetryAnalyzer.class
     )
     public void verifyDashboard() {
 
         System.out.println("===== Dashboard Test Started =====");
 
-        // Verify Dashboard/Home page title
-        String title = driver.getTitle();
+        // Login
+        LoginPage loginPage = new LoginPage(driver);
 
-
-        // Click Employees
-        driver.findElement(By.cssSelector("a[href='/Home/Dashboard']")).click();
-
-
-        String heading = driver.getTitle();
-        System.out.println(heading);
-
-        Assert.assertEquals(
-                heading,
-                "Dashboard - EAEmployee",
-                "Dashboard - EAEmployee heading is incorrect"
+        loginPage.login(
+                ConfigReader.getProperty("username"),
+                ConfigReader.getProperty("password")
         );
 
-        System.out.println("Dashboard - EAEmployee page verified successfully");
+        // Dashboard page
+        DashboardPage dashboardPage =
+                new DashboardPage(driver);
+
+        // Verify title
+        String title = dashboardPage.getPageTitle();
+
+        System.out.println("Dashboard Title = " + title);
+
+        Assert.assertEquals(
+                title,
+                "Home - EAEmployee",
+                "Dashboard title is incorrect"
+        );
+
+        // Verify URL
+        String currentUrl = dashboardPage.getCurrentUrl();
+
+        System.out.println("Dashboard URL = " + currentUrl);
+
+        Assert.assertEquals(
+                currentUrl,
+                ConfigReader.getProperty("url"),
+                "Dashboard URL is incorrect"
+        );
+
+        // Verify dashboard
+        Assert.assertTrue(
+                dashboardPage.isDashboardDisplayed(),
+                "Dashboard is not displayed"
+        );
+
+        System.out.println("Dashboard verified successfully");
+
+        System.out.println("===== Dashboard Test Completed =====");
     }
 }

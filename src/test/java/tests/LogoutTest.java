@@ -1,12 +1,13 @@
 package tests;
 
 import basepackage.BaseTest;
+import listeners.RetryAnalyzer;
+import pages.LoginPage;
+import pages.LogoutPage;
+import utils.ConfigReader;
 
-import org.openqa.selenium.By;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import java.time.Duration;
-
 
 public class LogoutTest extends BaseTest {
 
@@ -14,16 +15,28 @@ public class LogoutTest extends BaseTest {
             priority = 4,
             description = "Verify logout functionality",
             groups = {"sanity", "logout"},
-            dependsOnGroups = {"employee"}
+            dependsOnGroups = {"login"},
+            retryAnalyzer = RetryAnalyzer.class
     )
     public void logoutTest() {
 
         System.out.println("===== Logout Test Started =====");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        // Login first because BaseTest creates a fresh browser
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login(
+                ConfigReader.getProperty("username"),
+                ConfigReader.getProperty("password")
+        );
+
+        // Create Logout Page object
+        LogoutPage logoutPage = new LogoutPage(driver);
 
         // Click Logout
-        driver.findElement(By.xpath("//*[contains(text(),'Logout')]")).click();
+        logoutPage.clickLogout();
+        System.out.println("Logout successful");
 
-       System.out.println("Logout successful");
+        System.out.println("===== Logout Test Completed =====");
     }
 }

@@ -1,7 +1,11 @@
 package tests;
 
 import basepackage.BaseTest;
-import org.openqa.selenium.By;
+import listeners.RetryAnalyzer;
+import pages.EmployeePage;
+import pages.LoginPage;
+import utils.ConfigReader;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -9,23 +13,33 @@ public class EmployeePageTest extends BaseTest {
 
     @Test(
             priority = 3,
-            description = "Verify employee page",
+            description = "Verify Employee page",
             groups = {"sanity", "employee"},
-            dependsOnGroups = {"dashboard"}
+            dependsOnGroups = {"login"},
+            retryAnalyzer = RetryAnalyzer.class
     )
     public void verifyEmployeePage() {
 
         System.out.println("===== Employee Page Test Started =====");
 
-        // Click Employees
-        driver.findElement(
-                By.cssSelector("a[href='/Employee']")
-        ).click();
+        // Login
+        LoginPage loginPage = new LoginPage(driver);
 
-        // Verify page title
-        String title = driver.getTitle();
+        loginPage.login(
+                ConfigReader.getProperty("username"),
+                ConfigReader.getProperty("password")
+        );
 
-        System.out.println("Page Title = " + title);
+        // Employee page
+        EmployeePage employeePage =
+                new EmployeePage(driver);
+
+        employeePage.clickEmployee();
+
+        // Verify title
+        String title = employeePage.getPageTitle();
+
+        System.out.println("Employee Page Title = " + title);
 
         Assert.assertEquals(
                 title,
@@ -33,17 +47,15 @@ public class EmployeePageTest extends BaseTest {
                 "Employee page title is incorrect"
         );
 
-        // Verify Employee page URL
-        String currentUrl = driver.getCurrentUrl();
-
-        System.out.println("Current URL = " + currentUrl);
-
+        // Verify page
         Assert.assertTrue(
-                currentUrl.contains("/Employee"),
-                "Employee page URL is incorrect"
+                employeePage.isEmployeePageDisplayed(),
+                "Employee page is not displayed"
         );
 
-        System.out.println("Employee page verified successfully");
+        System.out.println(
+                "Employee page verified successfully"
+        );
 
         System.out.println("===== Employee Page Test Completed =====");
     }

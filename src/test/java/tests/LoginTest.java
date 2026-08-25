@@ -1,42 +1,42 @@
 package tests;
 
 import basepackage.BaseTest;
-import org.openqa.selenium.By;
+import listeners.RetryAnalyzer;
+import pages.LoginPage;
+import utils.ConfigReader;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import java.time.Duration;
+
 public class LoginTest extends BaseTest {
 
     @Test(
             priority = 1,
             description = "Verify user can login successfully",
-            groups = {"smoke", "login"}
+            groups = {"smoke", "login"},
+            retryAnalyzer = RetryAnalyzer.class
     )
-    public void loginTest() throws InterruptedException {
+    public void loginTest() {
 
         System.out.println("===== Login Test Started =====");
 
-        // Click Login
-        driver.findElement(By.linkText("Login")).click();
+        // Create Login Page object
+        LoginPage loginPage = new LoginPage(driver);
 
-        // Enter username
-        driver.findElement(By.id("UserName"))
-                .sendKeys("rajchozhan024@gmail.com");
+        // Read username and password from config.properties
+        String username =
+                ConfigReader.getProperty("username");
 
-        // Enter password
-        driver.findElement(By.id("Password"))
-                .sendKeys("Ea@761645");
+        String password =
+                ConfigReader.getProperty("password");
 
-        // Click Login
-        driver.findElement(By.xpath("//button[@type='submit']"))
-                .click();
+        // Login
+        loginPage.login(username, password);
 
-        // Verify title
+        // Verify page title
         String title = driver.getTitle();
 
         System.out.println("Page Title = " + title);
-
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         Assert.assertEquals(
                 title,
@@ -47,11 +47,14 @@ public class LoginTest extends BaseTest {
         // Verify URL
         String currentUrl = driver.getCurrentUrl();
 
+        String expectedUrl =
+                ConfigReader.getProperty("url");
+
         System.out.println("Current URL = " + currentUrl);
 
         Assert.assertEquals(
                 currentUrl,
-                "https://eaapp.somee.com/",
+                expectedUrl,
                 "Home page URL is incorrect"
         );
 

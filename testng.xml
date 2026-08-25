@@ -5,6 +5,11 @@
 
 <suite name="Automation Suite">
 
+
+    <listeners>
+        <listener class-name="listeners.ExtentReportListener"/>
+    </listeners>
+
     <test name="Smoke and Sanity Tests">
 
         <classes>

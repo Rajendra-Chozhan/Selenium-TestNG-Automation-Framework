@@ -1,62 +1,50 @@
 package basepackage;
 
+import java.time.Duration;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
-import java.time.Duration;
+import utils.ConfigReader;
 
 public class BaseTest {
 
-    protected static WebDriver driver;
+    public static WebDriver driver;
 
-    // Runs once before all test methods in the class
-    @BeforeClass
+    @BeforeMethod
     public void setup() {
 
-        System.out.println("===== BeforeClass : Browser Setup =====");
-
+        // Launch Chrome
         driver = new ChromeDriver();
 
+        // Implicit wait
+        driver.manage()
+                .timeouts()
+                .implicitlyWait(Duration.ofSeconds(10));
+
+        // Maximize browser
         driver.manage().window().maximize();
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        // Read URL from config.properties
+        String url = ConfigReader.getProperty("url");
 
-        driver.get("https://eaapp.somee.com/");
+        // Open application
+        driver.get(url);
 
-        System.out.println("Browser launched");
-        System.out.println("URL = " + driver.getCurrentUrl());
+        System.out.println("===== Browser Started =====");
+        System.out.println("Current URL = " + driver.getCurrentUrl());
     }
 
-
-    // Runs before every @Test method
-    @BeforeMethod
-    public void beforeMethod() {
-
-        System.out.println("===== BeforeMethod =====");
-        System.out.println("Starting test...");
-    }
-
-
-    // Runs after every @Test method
     @AfterMethod
-    public void afterMethod() {
-
-        System.out.println("===== AfterMethod =====");
-        System.out.println("Test completed");
-    }
-
-
-    // Runs once after all test methods in the class
-    @AfterClass(alwaysRun = true)
     public void tearDown() {
 
-        System.out.println("===== AfterClass =====");
-
         if (driver != null) {
-            driver.quit();
-        }
 
-        System.out.println("Browser closed");
+            driver.quit();
+
+            System.out.println("===== Browser Closed =====");
+        }
     }
 }
