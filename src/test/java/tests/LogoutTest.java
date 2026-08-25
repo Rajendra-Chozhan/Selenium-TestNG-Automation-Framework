@@ -33,9 +33,12 @@ public class LogoutTest extends BaseTest {
         // Create Logout Page object
         LogoutPage logoutPage = new LogoutPage(driver);
 
+
         // Click Logout
         logoutPage.clickLogout();
         System.out.println("Logout successful");
+
+        logoutPage.isLoginPageDisplayed();
 
         System.out.println("===== Logout Test Completed =====");
     }
